@@ -45,11 +45,8 @@ today = datetime.now(IST).date()
 c1, c2 = st.columns(2)
 start = c1.date_input('From', today - timedelta(days=1))
 end = c2.date_input('To', today)
-with st.expander('Options'):
-    use_cb = st.checkbox('Include overseas players (Cricbuzz)', value=False,
-                         help="Scrapes Cricbuzz pages; their robots.txt disallows bots.")
-    live = st.checkbox('Include matches in progress (Tests, Ranji)', value=True)
-    confirm = st.checkbox("Include 'confirm' players", value=False)
+# Always on: Indian (BCCI feed) and overseas (Cricbuzz) players, plus matches in progress.
+use_cb, live, confirm = True, True, False
 
 
 @st.cache_data(ttl=600, show_spinner=False)
