@@ -25,17 +25,6 @@ def secret(key):
         return None
 
 
-pwd = secret('APP_PASSWORD')
-if pwd:
-    if st.session_state.get('ok') is not True:
-        entered = st.text_input('Password', type='password')
-        if entered and entered == pwd:
-            st.session_state['ok'] = True
-            st.rerun()
-        elif entered:
-            st.error('Wrong password.')
-        st.stop()
-
 edak = secret('EDAK')
 if not edak:
     st.error('EDAK secret is not set.')
