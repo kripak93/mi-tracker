@@ -251,13 +251,13 @@ def appearance(sc, m, pid, row, xi):
         for w in inn.get('bowling', []):
             if w['bowler_id'] == pid:
                 app['bowl'].append(w)
-                tag = ' b ' + w['bowler_name']
-                for inn2 in sc.get('innings', []):
-                    for b in inn2.get('batting', []):
-                        d = b.get('dismissal_str') or ''
-                        v = f"{b['player_known_as']} ({b.get('runs')})"
-                        if d.endswith(tag) and v not in app['victims']:
-                            app['victims'].append(v)
+                # "b X", "c Y b X", "st Y b X" and "lbw X" (no "b" in lbw strings)
+                tag = re.compile(r'(^|\s)(b|lbw) ' + re.escape(w['bowler_name']) + r'$')
+                # victims come from the innings this spell was bowled in, so a batter
+                # dismissed in both innings is listed twice
+                for b in inn.get('batting', []):
+                    if tag.search((b.get('dismissal_str') or '').strip()):
+                        app['victims'].append(f"{b['player_known_as']} ({b.get('runs')})")
     try:
         res = app['result'].lower()
         won = res.startswith(team['name'].lower())
@@ -284,8 +284,16 @@ def fmt_bowl(w):
 
 
 def stumps_count(sc):
-    return sum(1 for inn in sc.get('innings', []) for n in inn.get('notes', [])
-               if (n.get('text') or '').lower().startswith('stumps'))
+    """Days completed. The feed repeats each Stumps note when play resumes, so count
+    distinct close-of-play scores rather than notes."""
+    seen = set()
+    for i, inn in enumerate(sc.get('innings', [])):
+        for n in inn.get('notes', []):
+            t = n.get('text') or ''
+            if t.lower().startswith('stumps'):
+                mm = re.search(r'(\d+/\d+) in ([\d.]+) overs', t)
+                seen.add((i, mm.groups()) if mm else t)
+    return len(seen)
 
 
 def day_label(sc):
@@ -343,7 +351,7 @@ def block(a):
     if not a['bat'] and not a['bowl']:
         lines.append('In the XI; did not bat or bowl.')
     if a['victims']:
-        lines.append('Dismissed ' + ', '.join(a['victims'][:4]) + '.')
+        lines.append('Dismissed ' + ', '.join(a['victims'][:6]) + '.')
     lines += a.get('notes') or []
     if a.get('state'):
         lines.append(a['state'])
