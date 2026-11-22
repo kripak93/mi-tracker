@@ -3,27 +3,27 @@ Rohit Sharma,india,squad_2026,yes,11326,b78c195f-b149-4136-9803-24209696c4c3,,,e
 Suryakumar Yadav,india,squad_2026,yes,20861,43655c81-eccb-4b7b-9f30-93d3ec933619,,,exact,Suryakumar Yadav,
 Tilak Varma,india,squad_2026,yes,69845,e1923399-a933-4c1e-9181-829b293f1767,,,exact,Tilak Varma,
 Jasprit Bumrah,india,squad_2026,yes,16096,352688d9-2f4c-4f66-a8fd-5538d4facaba,,,exact,Jasprit Bumrah,
-Deepak Chahar,india,squad_2026,yes,19257,1cda4d55-ae58-4bd0-9eef-a689660cb59b,,,exact,Deepak Chahar,
+Deepak Chahar,india,released_2027,no,19257,1cda4d55-ae58-4bd0-9eef-a689660cb59b,,,exact,Deepak Chahar,"released IPL 2027 retention list, 17 Nov 2026"
 Naman Dhir,india,squad_2026,yes,79429,f72b8290-8d0b-49dd-8e2e-25ad5ef10746,,,exact,Naman Dhir,
 Ashwani Kumar,india,squad_2026,yes,,,,,none,,
 Raghu Sharma,india,squad_2026,yes,,,,,none,,
 Raj Angad Bawa,india,squad_2026,yes,76211,e7643ddf-c3b3-4531-845e-3395b0243e9b,,,variant,Raj Bawa,withdrew injured in 2026; Ruchit Ahir replaced him
-Robin Minz,india,squad_2026,yes,,,,,none,,
-Danish Malewar,india,squad_2026,yes,,,,,none,,
-Atharva Ankolekar,india,squad_2026,yes,72144,5927d16d-7590-4198-b80e-d0a91688826d,,,exact,Atharva Ankolekar,withdrew injured in 2026; Krish Bhagat replaced him
+Robin Minz,india,released_2027,no,,,,,none,,"released IPL 2027 retention list, 17 Nov 2026"
+Danish Malewar,india,released_2027,no,,,,,none,,"released IPL 2027 retention list, 17 Nov 2026"
+Atharva Ankolekar,india,released_2027,no,72144,5927d16d-7590-4198-b80e-d0a91688826d,,,exact,Atharva Ankolekar,"withdrew injured in 2026; Krish Bhagat replaced him; released IPL 2027 retention list, 17 Nov 2026"
 Shardul Thakur,india,traded_in_2026,yes,27765,0830c84f-1c5a-436a-83cf-4d71c17bb0ea,,,exact,Shardul Thakur,from LSG
-Mayank Markande,india,traded_in_2026,yes,67641,d8ef30f9-0585-41b6-9fa1-52446fd5bfb6,,,exact,Mayank Markande,from KKR
-Mahipal Lomror,india,replacement_2026,confirm,20222,bd6945ff-904f-4e4b-af8b-7cb7b3e371a3,,,exact,Mahipal Lomror,replaced Quinton de Kock
-Ruchit Ahir,india,replacement_2026,confirm,,,,,none,,replaced Raj Angad Bawa
-Krish Bhagat,india,replacement_2026,confirm,,,,,none,,replaced Atharva Ankolekar
+Mayank Markande,india,released_2027,no,67641,d8ef30f9-0585-41b6-9fa1-52446fd5bfb6,,,exact,Mayank Markande,"from KKR; released IPL 2027 retention list, 17 Nov 2026"
+Mahipal Lomror,india,released_2027,no,20222,bd6945ff-904f-4e4b-af8b-7cb7b3e371a3,,,exact,Mahipal Lomror,"replaced Quinton de Kock; released IPL 2027 retention list, 17 Nov 2026"
+Ruchit Ahir,india,released_2027,no,,,,,none,,"replaced Raj Angad Bawa; released IPL 2027 retention list, 17 Nov 2026"
+Krish Bhagat,india,released_2027,no,,,,,none,,"replaced Atharva Ankolekar; released IPL 2027 retention list, 17 Nov 2026"
 Arshdeep Singh,india,incoming_2027,yes,67190,9421928e-793b-488e-8b97-c5746ecef946,,,exact,Arshdeep Singh,"traded from PBKS, 11 Nov 2026"
 Hardik Pandya,india,traded_out_2027,no,16093,007f3aa9-7d73-43c3-9283-92870cb454c0,,,exact,Hardik Pandya,"traded to PBKS, 11 Nov 2026"
-Trent Boult,overseas,squad_2026,yes,,,,8117,n/a (overseas: not in BCCI directory),,NZ
+Trent Boult,overseas,released_2027,no,,,,8117,n/a (overseas: not in BCCI directory),,"NZ; released IPL 2027 retention list, 17 Nov 2026"
 Mitchell Santner,overseas,squad_2026,yes,14334,,e4a0deae,10100,"name match (surname+initial, national team): India-match scorecards + Cricsheet",Mitch Santner / MJ Santner,NZ; withdrew injured in 2026
 Corbin Bosch,overseas,squad_2026,yes,,,,,n/a (overseas: not in BCCI directory),,SA
 Will Jacks,overseas,squad_2026,yes,,,9caf69a1,12258,"name match (surname+initial, national team): Cricsheet",WG Jacks,ENG
 Ryan Rickelton,overseas,squad_2026,yes,,,e66732f8,13070,"name match (surname+initial, national team): Cricsheet",RD Rickelton,SA
-Allah Ghazanfar,overseas,squad_2026,yes,,,,,n/a (overseas: not in BCCI directory),,AFG
+Allah Ghazanfar,overseas,released_2027,no,,,,,n/a (overseas: not in BCCI directory),,"AFG; released IPL 2027 retention list, 17 Nov 2026"
 Sherfane Rutherford,overseas,traded_in_2026,yes,,,d014d5ac,13748,"name match (surname+initial, national team): Cricsheet",SE Rutherford,WI; from GT
 Quinton de Kock,overseas,squad_2026,yes,,,,,n/a (overseas: not in BCCI directory),,SA; withdrew injured in 2026
-Keshav Maharaj,overseas,replacement_2026,confirm,,,0b60eb09,,"name match (surname+initial, national team): Cricsheet",KA Maharaj,SA; replaced Mitchell Santner
+Keshav Maharaj,overseas,released_2027,no,,,0b60eb09,,"name match (surname+initial, national team): Cricsheet",KA Maharaj,"SA; replaced Mitchell Santner; released IPL 2027 retention list, 17 Nov 2026"
