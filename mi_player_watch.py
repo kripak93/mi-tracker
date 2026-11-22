@@ -176,6 +176,10 @@ def build_notes(facts, limit=3):
         if w['overs'] >= 2 and w.get('rate') and w['econ'] <= 0.75 * w['rate']:
             cands.append((4, f"Tight spell: economy {w['econ']:.2f} against an innings rate "
                              f"of {w['rate']:.2f}."))
+    if len(facts['bowl']) > 1:  # two innings with the ball: give the match total
+        tw = sum(w['wkts'] for w in facts['bowl'])
+        tr = sum(w.get('runs', 0) for w in facts['bowl'])
+        cands.append((0 if tw >= 5 else 3, f"Match figures {tw}/{tr}."))
     out, seen = [], set()
     for _, t in sorted(cands, key=lambda c: c[0]):
         if t not in seen:
@@ -223,7 +227,8 @@ def bcci_facts(sc, pid, team_name, won):
                              'target': target})
         for w in inn.get('bowling', []):
             if w['bowler_id'] == pid:
-                f['bowl'].append({'wkts': int(num(w.get('wickets')) or 0), 'overs': num(w.get('overs')) or 0,
+                f['bowl'].append({'wkts': int(num(w.get('wickets')) or 0), 'runs': int(num(w.get('runs')) or 0),
+                                  'overs': num(w.get('overs')) or 0,
                                   'econ': num(w.get('economy_rate')) or 0,
                                   'rate': num(score.get('run_rate'))})
     return f
@@ -238,7 +243,7 @@ def appearance(sc, m, pid, row, xi):
            'status': day_label(sc) if live else '',
            'state': state_line(sc) if live else '',
            'date': m['start_date'],
-           'teams': f"{m['team1_name'].upper()} v {m['team2_name'].upper()}",
+           'teams': f"{team['name'].upper()} v {other['name'].upper()}",  # player's team first
            # international: "4th ODI"; domestic: "Syed Mushtaq Ali Trophy Elite" (+ round if any)
            'event': (m.get('title') or m['comp_name']) if m.get('_kind') == 'international'
            else ', '.join(x for x in (m['comp_name'], m.get('title')) if x),
@@ -426,18 +431,27 @@ def cb_facts(mi, cards, pid):
                 if w and num(w.get('wktRuns')) is not None:
                     entry = (int(w['wktRuns']), pos - 2)
             stand = None
-            for key, p in (inn.get('partnershipsData') or {}).items():
+            # pat_N is NOT the wicket number when someone retires, so place each stand
+            # by score: it ends at a fall of wicket if the running total matches one.
+            falls = {int(w.get('wktRuns') or -1): int(w.get('wktNbr') or 0)
+                     for w in (inn.get('wicketsData') or {}).values()}
+            pats = sorted((inn.get('partnershipsData') or {}).items(),
+                          key=lambda kv: int(kv[0].split('_')[1]))
+            score = 0
+            for j, (key, p) in enumerate(pats):
+                r = int(p.get('totalRuns') or 0)
+                start, score = score, score + r
                 if pid == p.get('bat1Id'):
                     other = p.get('bat2Name')
                 elif pid == p.get('bat2Id'):
                     other = p.get('bat1Name')
                 else:
                     continue
-                r = int(p.get('totalRuns') or 0)
                 if not stand or r > stand['runs']:
-                    n = int(key.split('_')[1])
-                    stand = {'runs': r, 'wicket': n, 'partner': other or '',
-                             'unbeaten': n > total[1]}
+                    wk = falls.get(score) or (1 + sum(1 for x in falls if 0 <= x <= start))
+                    last = j == len(pats) - 1
+                    stand = {'runs': r, 'wicket': wk, 'partner': other or '',
+                             'unbeaten': last and score not in falls and total[1] < 10}
             target = None
             if limited and idx == 1:
                 target = int((cards[0].get('scoreDetails') or {}).get('runs') or 0) + 1
@@ -446,7 +460,7 @@ def cb_facts(mi, cards, pid):
                              'team_total': total, 'target': target})
         for w in (inn['bowlTeamDetails'].get('bowlersData') or {}).values():
             if w['bowlerId'] == pid:
-                f['bowl'].append({'wkts': int(w['wickets']), 'overs': num(w['overs']) or 0,
+                f['bowl'].append({'wkts': int(w['wickets']), 'runs': int(w['runs']), 'overs': num(w['overs']) or 0,
                                   'econ': num(w['economy']) or 0, 'rate': num(sd.get('runRate'))})
     return f
 
@@ -470,9 +484,11 @@ def cb_appearances(mi, cards, overseas, learned):
                 return True
             return False
 
-        bat, bowl = [], []
+        bat, bowl, my_tid = [], [], None
         for inn in cards:
             for b in inn['batTeamDetails']['batsmenData'].values():
+                if me(b['batId'], b['batName']):
+                    my_tid = inn['batTeamDetails'].get('batTeamId')
                 if me(b['batId'], b['batName']) and (b['balls'] or b['runs'] or b.get('outDesc')):
                     out_txt = (b.get('outDesc') or '').strip().lower()
                     bat.append({'runs': b['runs'], 'balls_faced': b['balls'],
@@ -480,6 +496,7 @@ def cb_appearances(mi, cards, overseas, learned):
                                 'is_out': 0 if out_txt in ('', 'batting', 'not out') else 1})
             for w in (inn['bowlTeamDetails'].get('bowlersData') or {}).values():
                 if me(w['bowlerId'], w['bowlName']):
+                    my_tid = my_tid or inn['bowlTeamDetails'].get('bowlTeamId')
                     bowl.append({'wickets': w['wickets'], 'runs': w['runs'],
                                  'overs': f"{float(w['overs']):.1f}",
                                  'economy_rate': f"{float(w['economy']):.2f}"})
@@ -487,13 +504,14 @@ def cb_appearances(mi, cards, overseas, learned):
             continue
         pid = st['pid']
         victims = []
-        for inn in cards:
+        for inn in cards:  # listed per innings, so a batter out twice appears twice
             for b in inn['batTeamDetails']['batsmenData'].values():
                 d = (b.get('outDesc') or '').lower()
-                v = f"{b['batName']} ({b['runs']})"
-                if (b.get('bowlerId') == pid and 'run out' not in d and 'retired' not in d
-                        and v not in victims):
-                    victims.append(v)
+                if b.get('bowlerId') == pid and 'run out' not in d and 'retired' not in d:
+                    victims.append(f"{b['batName']} ({b['runs']})")
+        t1, t2 = mi['team1'], mi['team2']
+        if my_tid is not None and my_tid == t2.get('teamId'):
+            t1, t2 = t2, t1  # player's team first
         try:
             notes = build_notes(cb_facts(mi, cards, pid))
         except Exception as e:
@@ -504,7 +522,7 @@ def cb_appearances(mi, cards, overseas, learned):
             row['cricbuzz_id'] = str(pid)
         apps.append({
             'name': row['name'], 'date': ist_date(mi['startDate']).isoformat(),
-            'teams': f"{mi['team1']['teamName'].upper()} v {mi['team2']['teamName'].upper()}",
+            'teams': f"{t1['teamName'].upper()} v {t2['teamName'].upper()}",
             'event': event, 'status': label, 'state': state,
             'result': (mi.get('status') or '').strip() if mi.get('state') == 'Complete' else '',
             'bat': bat, 'bowl': bowl, 'victims': victims, 'notes': notes})
